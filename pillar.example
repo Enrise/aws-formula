@@ -1,0 +1,232 @@
+aws:
+  ## AWS authentication details
+  security:
+    accountid: XXXXXXXXXXXX
+    keyid: AKIAIXXXXXXXXXXXXXXX
+    key: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+    region: eu-west-1
+
+  ## AWS services
+  services:
+    ## Amazon S3 buckets
+    s3:
+      buckets:
+        my-salt-created-bucket:
+          LocationConstraint: EU
+          Policy:
+            Version: "2012-10-17"
+            Statement:
+              - Sid: "String"
+                Effect: "Allow"
+                Principal:
+                  AWS: "arn:aws:iam::XXXXXXXXXXXX:root"
+                Action: "s3:PutObject"
+                Resource: "arn:aws:s3:::XXXXXXXXX/*"
+          Website:
+            ErrorDocument:
+              Key: "error.html"
+            IndexDocument:
+              Suffix: "index.html"
+          Tagging:
+            Environment: Acceptance
+            Service: 'Asset Storage'
+            ProvisionedBy: 'Salt'
+
+    ## Amazon Elastic Compute
+    ec2:
+      # Available SSH keys
+      ssh_keys:
+        me@example.com: 'ssh-rsa XXXXXXXXXXXXXXX me@example.com'
+
+      # Available EC2 instances
+      instances:
+        webserver.example.com:
+          instance_type: t2.micro
+          image_id: ami-6f587e1c
+          key_name: me@example.com
+          vpc_id: vpc-aaa00000
+          subnet_id: subnet-12345678
+          private_ip_address: 192.168.1.25
+          disable_api_termination: True
+          allocate_eip: False
+          tags:
+            Environment: Acceptance
+            Service: 'Webserver'
+            ProvisionedBy: 'Salt'
+          security_group_ids:
+            - sg-1234567
+          block_device_map:
+            /dev/sda1:
+              volume_type: gp2
+              size: 15
+              delete_on_termination: True
+              tags:
+                Name: OS - %hostname%
+                DiskType: OS
+            /dev/sdf:
+              size: 20
+              volume_type: gp2
+              delete_on_termination: False
+              encrypted: True
+              tags:
+                Name: Data - %hostname%
+                DiskType: Data
+
+    ## Amazon Relational Database Service (RDS)
+    rds:
+      instances:
+        my-rds-test-server:
+          region: eu-west-1
+          availability_zone: eu-west-1c
+          storage_type: gp2
+          engine: mariadb
+          engine_version: 10.1.19
+          storage_encrypted: False
+          kms_keyid: 11111111-2222-3333-4444-555555555555
+          copy_tags_to_snapshot: True
+          publicly_accessible: False
+
+          # Env specific settings
+          name: my-rds-test-server
+          allocated_storage: 5
+          db_instance_class: db.t2.micro
+          db_name: database_test
+          master_username: root
+          master_user_password: mastermaster
+          db_subnet_group_name: 'acc subnet group'
+          multi_az: False
+          backup_retention_period: 7
+          auto_minor_version_upgrade: True
+          option_group_name: acceptance-mariadb-10-1
+          tags:
+            Environment: Acceptance
+            Service: 'Database'
+            ProvisionedBy: 'Salt'
+          vpc_security_group_ids:
+            - 'rds acceptance'
+
+
+    ## Amazon Elastic Loadbalancer
+    elb:
+      loadbalancers:
+        example-lb-acc:
+          instances:
+            - instance-id1
+            - instance-id2
+          availability_zones:
+            - eu-west-1a
+            - eu-west-1b
+            - eu-west-1c
+          listeners:
+            - elb_port: 443
+              instance_port: 80
+              elb_protocol: HTTPS
+              instance_protocol: HTTP
+              certificate: 'arn:aws:iam::1234567891234:server-certificate/example-lb'
+              policies:
+                - my-ssl-policy
+                - cookie-policy
+            - elb_port: 80
+              instance_port: 80
+              elb_protocol: HTTP
+              policies:
+                - cookie-policy
+          backends:
+            - instance_port: 80
+              policies:
+                - enable-proxy-protocol
+          health_check:
+            target: 'HTTP:80/'
+          attributes:
+            cross_zone_load_balancing:
+              enabled: true
+            access_log:
+              enabled: true
+              s3_bucket_name: 'mybucket'
+              s3_bucket_prefix: 'my-logs'
+              emit_interval: 5
+            connecting_settings:
+              idle_timeout: 60
+          security_groups:
+            - Allow incoming web traffic
+          policies:
+            - policy_name: my-ssl-policy
+              policy_type: SSLNegotiationPolicyType
+              policy:
+                Protocol-TLSv1.2: true
+                Protocol-SSLv3: false
+                Server-Defined-Cipher-Order: true
+                ECDHE-ECDSA-AES128-GCM-SHA256: true
+            - policy_name: cookie-policy
+              policy_type: LBCookieStickinessPolicyType
+            - policy_name: enable-proxy-protocol
+              policy_type: ProxyProtocolPolicyType
+              policy:
+                ProxyProtocol: true
+
+    ## Amazon lambda
+      functions:
+        example-function:
+          FunctionName: example-function
+          Runtime: python2.7
+          Role: run_example_function
+          Handler: main
+          ZipFile: salt://files/example-function.zip
+          Description: "Do some example stuff"
+          Timeout: 10
+          MemorySize: 128
+          Triggers:
+            - ScheduleExpression: 'cron(0 5,17 ? * MON-FRI *)'
+              State: 'ENABLED'
+
+    ## Amazon IAM Roles
+    iam_role:
+      roles:
+        MyRole:
+          policies:
+            MyPolicy:
+              Statement:
+                - Action:
+                    - 'ec2:DescribeInstances'
+                    - 'ec2:StopInstances'
+                    - 'ec2:StartInstances'
+                  Effect: Allow
+                  Resource:
+                    - '*'
+                  Sid: Stmt1453628436000
+                  Condition:
+                    StringEquals:
+                      "ec2:ResourceTag/Environment":
+                        - Test
+
+    ## Cloudwatch Events
+    cloudwatch_event:
+      events:
+        DoFunkyStuff:
+          ScheduleExpression: 'cron(0 9,17 ? * MON-FRI *)'
+          State: 'ENABLED'
+          Description: 'Does some funky stuff during business hours.'
+          Targets:
+            - Id: "DoFunkyStuff"
+              Arn: "arn:aws:lambda:eu-west-1:123456789000:function:DoFunkyStuff"
+
+    ## Securitygroups
+    securitygroup:
+      groups:
+        AllowIncomingHTTP:
+          description: Allows incoming HTTP traffic
+          vpc_id: vpc-1234567
+          rules:
+            - ip_protocol: tcp
+              from_port: 80
+              to_port: 80
+              cidr_ip:
+                - 0.0.0.0/0
+          rules_egress:
+            - ip_protocol: all
+              from_port: -1
+              to_port: -1
+              cidr_ip:
+                - 0.0.0.0/0
+          tags:
+            Environment: Production
