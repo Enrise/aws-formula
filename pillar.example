@@ -179,6 +179,47 @@ aws:
             - ScheduleExpression: 'cron(0 5,17 ? * MON-FRI *)'
               State: 'ENABLED'
 
+    ## Amazon IAM
+    iam:
+      users:
+        myuser:
+          - policies:
+              mypolicy: |
+                  {
+                      "Version": "2012-10-17",
+                      "Statement": [{
+                      "Effect": "Allow",
+                      "Action": "*",
+                      "Resource": "*"}]
+                  }
+          - password: NewPassword$$1
+
+      groups:
+        mygroup:
+          - users:
+            - myuser
+            - myuser1
+          - policies:
+              mypolicy: |
+                  {
+                      "Version": "2012-10-17",
+                      "Statement": [{
+                      "Effect": "Allow",
+                      "Action": "*",
+                      "Resource": "*"}]
+                  }
+
+      certificates:
+        MyCertificate:
+          - public_key: salt://base/mycert.crt
+          - private_key: salt://base/mycert.key
+          - cert_chain: salt://base/mycert_chain.crt
+
+      policies:
+        MyPolicy:
+          - policy_document: '{"MyPolicy": "Statement": [{"Action": ["sqs:*"], "Effect": "Allow", "Resource": ["arn:aws:sqs:*:*:*"], "Sid": "MyPolicySqs1"}]}'
+
+
     ## Amazon IAM Roles
     iam_role:
       roles:
