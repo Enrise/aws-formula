@@ -26,7 +26,5 @@ aws_cloudwatch_event_{{ name }}:
   boto_secgroup.present:
     - name: {{ name }}
     {{ utils.sls_flatten(details)|indent(4) }}
-    - keyid: {{ securityDetails.get('keyid') }}
-    - key: {{ securityDetails.get('key') }}
-    - region: {{ details['region'] if 'region' in details else 'eu-west-1' }}
+    {{ utils.addSecurityDetails(securityDetails)|indent(4) }}
 {%- endmacro %}

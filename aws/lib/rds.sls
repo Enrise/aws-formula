@@ -7,9 +7,7 @@ aws_rds_instance_{{ name }}:
   boto_rds.present:
     - name: {{ name }}
     {{ utils.sls_list(details,['tags'])|indent(4) }}
-    - keyid: {{ securityDetails.get('keyid') }}
-    - key: {{ securityDetails.get('key') }}
-    - region: {{ details.get('region', 'eu-west-1') }}
+    {{ utils.addSecurityDetails(securityDetails)|indent(4) }}
 
 {%- if 'tags' in details %}
 # Tags are currently unavailable see https://github.com/saltstack/salt/issues/38936

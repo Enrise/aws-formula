@@ -50,3 +50,13 @@
 
     {{ ret|json() }}
 {%- endmacro -%}
+
+{%- macro addSecurityDetails(securityDetails) %}
+- region: {{ securityDetails.get('region', 'eu-west-1') }}
+{%- if 'keyid' in securityDetails %}
+- keyid: {{ securityDetails.get('keyid') }}
+{%- endif %}
+{%- if 'key' in securityDetails %}
+- key: {{ securityDetails.get('key') }}
+{%- endif %}
+{%- endmacro -%}

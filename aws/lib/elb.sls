@@ -7,9 +7,7 @@ aws_elb_{{ name }}:
   boto_elb.present:
     - name: {{ name }}
     {{ utils.sls_flatten(details, ['instances'])|indent(4) }}
-    - keyid: {{ securityDetails.get('keyid') }}
-    - key: {{ securityDetails.get('key') }}
-    - region: {{ details['region'] if 'region' in details else 'eu-west-1' }}
+    {{ utils.addSecurityDetails(securityDetails)|indent(4) }}
 
 {% if 'instances' in details %}
 # Add instances to ELB
@@ -20,9 +18,7 @@ aws_elb_{{ name }}_instances:
     {% for instance in details.get('instances') %}
       - {{ instance }}
     {%- endfor %}
-    - keyid: {{ securityDetails.get('keyid') }}
-    - key: {{ securityDetails.get('key') }}
-    - region: {{ details['region'] if 'region' in details else 'eu-west-1' }}
+    {{ utils.addSecurityDetails(securityDetails)|indent(4) }}
     - require:
       - boto_elb: aws_elb_{{ name }}
 {%- endif %}

@@ -7,7 +7,5 @@ aws_s3_bucket_{{ name }}:
   boto_s3_bucket.present:
     - Bucket: {{ name }}
     {{ utils.sls_flatten(details)|indent(4) }}
-    - region: {{ details.get('region', 'eu-west-1') }}
-    - keyid: {{ securityDetails.get('keyid') }}
-    - key: {{ securityDetails.get('key') }}
+    {{ utils.addSecurityDetails(securityDetails)|indent(4) }}
 {%- endmacro %}

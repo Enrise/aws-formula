@@ -7,9 +7,7 @@ aws_ec2_ssh_pubkey_{{ name }}:
    boto_ec2.key_present:
     - name: {{ name }}
     - upload_public: '{{ key }}'
-    - keyid: {{ securityDetails.get('keyid') }}
-    - key: {{ securityDetails.get('key') }}
-    - region: {{ securityDetails.get('region', 'eu-west-1') }}
+    {{ utils.addSecurityDetails(securityDetails)|indent(4) }}
 {%- endmacro %}
 
 # Ensure the instance with the given name is created
@@ -26,17 +24,13 @@ aws_ec2_instance_{{ hostname }}_nic:
     - groups: {{ details.get('security_group_ids') }}
     - source_dest_check: {{ details.get('source_dest_check', True) }}
     - allocate_eip: {{ details.get('allocate_eip', False) }}
-    - keyid: {{ securityDetails.get('keyid') }}
-    - key: {{ securityDetails.get('key') }}
-    - region: {{ securityDetails.get('region', 'eu-west-1') }}
+    {{ utils.addSecurityDetails(securityDetails)|indent(4) }}
 
 aws_ec2_instance_{{ hostname }}:
   boto_ec2.instance_present:
     - instance_name: {{ hostname }}
     {{ utils.sls_list(details, ['private_ip_address','subnet_id','allocate_eip','source_dest_check','nic_description'])|replace('%hostname%', hostname)|indent(4) }}
-    - keyid: {{ securityDetails.get('keyid') }}
-    - key: {{ securityDetails.get('key') }}
-    - region: {{ securityDetails.get('region', 'eu-west-1') }}
+    {{ utils.addSecurityDetails(securityDetails)|indent(4) }}
     # Attach NIC we just created
     - network_interface_name: {{ hostname }}
     - require:
@@ -60,9 +54,7 @@ aws_ec2_tag_volumes_{{ hostname }}:
           {{ utils.sls_dict(device_details.get('tags',{}))|replace('%hostname%', hostname)|indent(10) }}
       {%- endfor %}
     - authoritative: False
-    - keyid: {{ securityDetails.get('keyid') }}
-    - key: {{ securityDetails.get('key') }}
-    - region: {{ securityDetails.get('region', 'eu-west-1') }}
+    {{ utils.addSecurityDetails(securityDetails)|indent(4) }}
     - require:
       - boto_ec2: aws_ec2_instance_{{ hostname }}
 {%- endmacro %}

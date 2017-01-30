@@ -21,9 +21,7 @@ aws_lambda_function_{{name}}_file:
 aws_lambda_function_{{ name }}:
   boto_lambda.function_present:
     {{ utils.sls_list(details,['Triggers'])|indent(4) }}
-    - region: {{ securityDetails.get('region', 'eu-west-1') }}
-    - keyid: {{ securityDetails.get('keyid') }}
-    - key: {{ securityDetails.get('key') }}
+    {{ utils.addSecurityDetails(securityDetails)|indent(4) }}
 
 # Create CloudWatch triggers in case it has been specified underneath the Lambda
 {%- if 'Triggers' in details %}
