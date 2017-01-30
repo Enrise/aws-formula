@@ -110,9 +110,9 @@ aws:
     elb:
       loadbalancers:
         example-lb-acc:
-          instances:
-            - instance-id1
-            - instance-id2
+          instances_ids:
+            - i-111111
+            - i-222222
           availability_zones:
             - eu-west-1a
             - eu-west-1b
