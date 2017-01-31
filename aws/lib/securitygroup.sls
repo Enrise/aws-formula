@@ -22,7 +22,7 @@
 
 {%- endif %}
 
-aws_cloudwatch_event_{{ name }}:
+aws_securitygroup_{{ name }}:
   boto_secgroup.present:
     - name: {{ name }}
     {{ utils.sls_flatten(details)|indent(4) }}

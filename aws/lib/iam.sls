@@ -24,7 +24,7 @@ aws_iam_user_{{ name }}_keys:
 aws_iam_group_{{ name }}:
   boto_iam.group_present:
     - name: {{ name }}
-    {{ utils.sls_flatten(details, ['api_access'])|indent(4) }}
+    {{ utils.sls_flatten(details)|indent(4) }}
     {{ utils.addSecurityDetails(securityDetails)|indent(4) }}
 {%- endmacro %}
 
@@ -33,7 +33,7 @@ aws_iam_group_{{ name }}:
 aws_iam_policy_{{ name }}:
   boto_iam.policy_present:
     - name: {{ name }}
-    {{ utils.sls_flatten(details, ['api_access'])|indent(4) }}
+    {{ utils.sls_flatten(details)|indent(4) }}
     {{ utils.addSecurityDetails(securityDetails)|indent(4) }}
 {%- endmacro %}
 
@@ -42,6 +42,6 @@ aws_iam_policy_{{ name }}:
 aws_iam_certificate_{{ name }}:
   boto_iam.cert_present:
     - name: {{ name }}
-    {{ utils.sls_flatten(details, ['api_access'])|indent(4) }}
+    {{ utils.sls_flatten(details)|indent(4) }}
     {{ utils.addSecurityDetails(securityDetails)|indent(4) }}
 {%- endmacro %}
