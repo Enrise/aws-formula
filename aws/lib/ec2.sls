@@ -21,10 +21,10 @@ aws_ec2_instance_{{ hostname }}_nic:
     - private_ip_address: {{ details.get('private_ip_address') }}
     {%- endif %}
     - description: {{ details.get('nic_description') }}
-    {%- if 'security_group_ids' in details %}
+    {%- if 'security_group_names' in details %}
     - groups:
-      {% for group_id in details.get('security_group_ids') %}
-      - {{ group_id }}
+      {% for group_name in details.get('security_group_names') %}
+      - {{ group_name }}
       {%- endfor %}
     {%- endif %}
     - source_dest_check: {{ details.get('source_dest_check', True) }}
