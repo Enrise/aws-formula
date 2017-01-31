@@ -14,7 +14,7 @@ aws_iam_user_{{ name }}:
 aws_iam_user_{{ name }}_keys:
   boto_iam.keys_present:
     - name: {{ name }}
-    - number: 2
+    - number: 1
     - save_dir: /root
 {%- endif %}
 {%- endmacro %}

@@ -21,7 +21,12 @@ aws_ec2_instance_{{ hostname }}_nic:
     - private_ip_address: {{ details.get('private_ip_address') }}
     {%- endif %}
     - description: {{ details.get('nic_description') }}
-    - groups: {{ details.get('security_group_ids') }}
+    {%- if 'security_group_ids' in details %}
+    - groups:
+      {% for group_id in details.get('security_group_ids') %}
+      - {{ group_id }}
+      {%- endfor %}
+    {%- endif %}
     - source_dest_check: {{ details.get('source_dest_check', True) }}
     - allocate_eip: {{ details.get('allocate_eip', False) }}
     {{ utils.addSecurityDetails(securityDetails)|indent(4) }}
