@@ -4,6 +4,6 @@
 {%- set config = salt['pillar.get']('aws:services:cloudwatch_event') %}
 
 ## Create Cloudwatch Events
-{%- for name, details in config.get('events', {}).iteritems() %}
+{%- for name, details in config.get('events', {}).items() %}
 {{ cloudwatch_event.create_event(name, details, security) }}
 {%- endfor %}
