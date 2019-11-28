@@ -4,6 +4,6 @@
 {%- set config = salt['pillar.get']('aws:services:rds') %}
 
 ## Create RDS instances
-{%- for hostname, details in config.get('instances', {}).iteritems() %}
+{%- for hostname, details in config.get('instances', {}).items() %}
 {{ rds.create_instance(hostname, details, security) }}
 {%- endfor %}
