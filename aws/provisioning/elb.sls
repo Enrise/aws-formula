@@ -4,6 +4,6 @@
 {%- set config = salt['pillar.get']('aws:services:elb') %}
 
 ## Create ELB
-{%- for name, details in config.get('loadbalancers', {}).iteritems() %}
+{%- for name, details in config.get('loadbalancers', {}).items() %}
 {{ elb.create_instance(name, details, security) }}
 {%- endfor %}
