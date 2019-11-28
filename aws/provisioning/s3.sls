@@ -4,6 +4,6 @@
 {%- set config = salt['pillar.get']('aws:services:s3') %}
 
 ## Create S3 Buckets
-{%- for bucket_name, bucket_details in config.get('buckets', {}).iteritems() %}
+{%- for bucket_name, bucket_details in config.get('buckets', {}).items() %}
 {{ s3.create_bucket(bucket_name, bucket_details, security) }}
 {%- endfor %}
