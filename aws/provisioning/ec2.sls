@@ -4,11 +4,11 @@
 {%- set config = salt['pillar.get']('aws:services:ec2') %}
 
 ## Create SSH keypairs
-{%- for name, key in config.get('ssh_keys', []).iteritems() %}
+{%- for name, key in config.get('ssh_keys', []).items() %}
 {{ ec2.add_pubkey(name, key, security) }}
 {%- endfor %}
 
 ## Create EC2 instances (with volumes and ENI's)
-{%- for hostname, details in config.get('instances', {}).iteritems() %}
+{%- for hostname, details in config.get('instances', {}).items() %}
 {{ ec2.create_instance(hostname, details, security) }}
 {%- endfor %}
