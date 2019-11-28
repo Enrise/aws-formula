@@ -4,6 +4,6 @@
 {%- set config = salt['pillar.get']('aws:services:iam_role') %}
 
 ## Create IAM Role
-{%- for name, details in config.get('roles', {}).iteritems() %}
+{%- for name, details in config.get('roles', {}).items() %}
 {{ iam.create_role(name, details, security) }}
 {%- endfor %}
