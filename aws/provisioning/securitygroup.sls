@@ -4,6 +4,6 @@
 {%- set config = salt['pillar.get']('aws:services:securitygroup') %}
 
 ## Create Securitygroups
-{%- for name, details in config.get('groups', {}).iteritems() %}
+{%- for name, details in config.get('groups', {}).items() %}
 {{ securitygroup.create_group(name, details, security) }}
 {%- endfor %}
