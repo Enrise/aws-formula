@@ -4,6 +4,6 @@
 {%- set config = salt['pillar.get']('aws:services:lambda') %}
 
 ## Create Lambda functions
-{%- for name, details in config.get('functions', {}).iteritems() %}
+{%- for name, details in config.get('functions', {}).items() %}
 {{ lambda.create_function(name, details, security) }}
 {%- endfor %}
