@@ -50,7 +50,7 @@ aws_ec2_instance_{{ hostname }}:
 aws_ec2_tag_volumes_{{ hostname }}:
   boto_ec2.volumes_tagged:
     - tag_maps:
-      {%- for device_name, device_details in block_device_map.iteritems() %}
+      {%- for device_name, device_details in block_device_map.items() %}
       - filters:
           instance_name: {{ hostname }}
           attachment.device: {{ device_name }}
